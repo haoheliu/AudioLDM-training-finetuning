@@ -13,6 +13,7 @@ from audioldm_train.utilities.model_util import (
 from transformers import GPT2Config, GPT2Model
 import torch.optim.lr_scheduler as lr_scheduler
 
+
 class Prenet(nn.Module):
     def __init__(self, in_dim, sizes=[256, 128], dropout_rate=0.5):
         super(Prenet, self).__init__()
@@ -30,7 +31,8 @@ class Prenet(nn.Module):
         for linear in self.layers:
             inputs = self.dropout(self.relu(linear(inputs)))
         return inputs
-    
+
+
 class CLAP2AudioMAE(pl.LightningModule):
     def __init__(
         self,

@@ -24,7 +24,11 @@ from torch.utils.data import DataLoader
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-from audioldm_train.utilities.tools import listdir_nohidden, get_restore_step, copy_test_subset_data
+from audioldm_train.utilities.tools import (
+    listdir_nohidden,
+    get_restore_step,
+    copy_test_subset_data,
+)
 import wandb
 from audioldm_train.utilities.model_util import instantiate_from_config
 import logging
@@ -119,9 +123,7 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
     )
 
     os.makedirs(checkpoint_path, exist_ok=True)
-
     shutil.copy(config_yaml_path, wandb_path)
-    # os.system("cp %s %s" % (config_yaml_path, wandb_path))
 
     if len(os.listdir(checkpoint_path)) > 0:
         print("Load checkpoint from path: %s" % checkpoint_path)
@@ -138,7 +140,6 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
     devices = torch.cuda.device_count()
 
     latent_diffusion = instantiate_from_config(configs["model"])
-    # latent_diffusion = LatentDiffusion(**configs["model"]["params"])
     latent_diffusion.set_log_dir(log_path, exp_group_name, exp_name)
 
     wandb_logger = WandbLogger(
@@ -155,22 +156,19 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
 
     # from pytorch_lightning.profilers import AdvancedProfiler
 
-    # profiler = AdvancedProfiler(filename="advance_profile_test.txt")
-
     trainer = Trainer(
         accelerator="gpu",
         devices=devices,
-        # precision="16-mixed",
-        # profiler=profiler,
         logger=wandb_logger,
         max_steps=max_steps,
         num_sanity_val_steps=1,
-        # num_sanity_val_steps=0,
         limit_val_batches=limit_val_batches,
         check_val_every_n_epoch=validation_every_n_epochs,
         strategy=DDPStrategy(find_unused_parameters=True),
         callbacks=[checkpoint_callback],
     )
+
+    trainer.fit(latent_diffusion, loader, val_loader, ckpt_path=resume_from_checkpoint)
 
     ################################################################################################################
     # if(resume_from_checkpoint is not None):
@@ -198,25 +196,14 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
 
     #     latent_diffusion.load_state_dict(ckpt, strict=False)
 
-    # ################################################################################################################
     # if(perform_validation):
     #     trainer.validate(latent_diffusion, val_loader)
 
     # trainer.fit(latent_diffusion, loader, val_loader)
     ################################################################################################################
-    trainer.fit(
-        latent_diffusion, loader, val_loader, ckpt_path=resume_from_checkpoint
-    )  # Sometimes this line can avoid GPU OOM
-
-    if trainer.global_step > configs["step"]["max_steps"] // 2:
-        for i in range(5):
-            seed_everything(i)
-            trainer.validate(latent_diffusion, val_loader)
 
 
 if __name__ == "__main__":
-
-    # python3 ~/submit.py -i config/4_audiomae_cond/2023_05_20_audiomae_crossattn_audiocaps_pool_rand.sh --cpu 32 --gpu 4 --mem 96 --group_id 122 --cluster_id 17 --note audiomae_pool_rand_audiocaps --elas
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-c",
@@ -231,7 +218,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     perform_validation = args.val
-    # torch._dynamo.config.suppress_errors = True
 
     assert torch.cuda.is_available(), "CUDA is not available"
 

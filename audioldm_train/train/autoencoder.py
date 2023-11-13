@@ -13,26 +13,28 @@ import argparse
 import yaml
 import torch
 from pytorch_lightning.strategies.ddp import DDPStrategy
-from utilities.data.dataset import AudioDataset
+from audioldm_train.utilities.data.dataset import AudioDataset
 from torch.utils.data import DataLoader
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning import Trainer
 from audioldm_train.modules.latent_encoder.autoencoder import AutoencoderKL
 from pytorch_lightning.callbacks import ModelCheckpoint
-from utilities.tools import get_restore_step
+from audioldm_train.utilities.tools import get_restore_step
+
 
 def listdir_nohidden(path):
     for f in os.listdir(path):
         if not f.startswith("."):
             yield f
 
+
 def main(configs, exp_group_name, exp_name):
-    if("precision" in configs.keys()):
+    if "precision" in configs.keys():
         torch.set_float32_matmul_precision(configs["precision"])
     batch_size = config_yaml["model"]["params"]["batchsize"]
     log_path = config_yaml["log_directory"]
 
-    if("dataloader_add_ons" in configs["data"].keys()):
+    if "dataloader_add_ons" in configs["data"].keys():
         dataloader_add_ons = configs["data"]["dataloader_add_ons"]
     else:
         dataloader_add_ons = []
@@ -40,11 +42,7 @@ def main(configs, exp_group_name, exp_name):
     dataset = AudioDataset(config_yaml, split="train", add_ons=dataloader_add_ons)
 
     loader = DataLoader(
-        dataset,
-        batch_size=batch_size,
-        num_workers=8,
-        pin_memory=True,
-        shuffle=True
+        dataset, batch_size=batch_size, num_workers=8, pin_memory=True, shuffle=True
     )
 
     print(
@@ -62,13 +60,13 @@ def main(configs, exp_group_name, exp_name):
     )
 
     model = AutoencoderKL(
-        ddconfig = config_yaml["model"]["params"]["ddconfig"],
-        lossconfig = config_yaml["model"]["params"]["lossconfig"],
-        embed_dim = config_yaml["model"]["params"]["embed_dim"],
-        image_key = config_yaml["model"]["params"]["image_key"],
-        base_learning_rate = config_yaml["model"]["base_learning_rate"],
-        subband = config_yaml["model"]["params"]["subband"],
-        sampling_rate=config_yaml["preprocessing"]["audio"]["sampling_rate"]
+        ddconfig=config_yaml["model"]["params"]["ddconfig"],
+        lossconfig=config_yaml["model"]["params"]["lossconfig"],
+        embed_dim=config_yaml["model"]["params"]["embed_dim"],
+        image_key=config_yaml["model"]["params"]["image_key"],
+        base_learning_rate=config_yaml["model"]["base_learning_rate"],
+        subband=config_yaml["model"]["params"]["subband"],
+        sampling_rate=config_yaml["preprocessing"]["audio"]["sampling_rate"],
     )
 
     try:
@@ -76,12 +74,7 @@ def main(configs, exp_group_name, exp_name):
     except:
         config_reload_from_ckpt = None
 
-    checkpoint_path = os.path.join(
-        log_path,
-        exp_group_name, 
-        exp_name,
-        "checkpoints"
-    )
+    checkpoint_path = os.path.join(log_path, exp_group_name, exp_name, "checkpoints")
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_path,
@@ -94,12 +87,8 @@ def main(configs, exp_group_name, exp_name):
         save_last=True,
     )
 
-    wandb_path = os.path.join(
-        log_path,
-        exp_group_name, 
-        exp_name
-    )
-    
+    wandb_path = os.path.join(log_path, exp_group_name, exp_name)
+
     model.set_log_dir(log_path, exp_group_name, exp_name)
 
     os.makedirs(checkpoint_path, exist_ok=True)
@@ -132,7 +121,7 @@ def main(configs, exp_group_name, exp_name):
         limit_val_batches=100,
         callbacks=[checkpoint_callback],
         strategy=DDPStrategy(find_unused_parameters=True),
-        val_check_interval=20000,
+        val_check_interval=2000,
     )
 
     # TRAINING
@@ -140,6 +129,7 @@ def main(configs, exp_group_name, exp_name):
 
     # EVALUTION
     # trainer.test(model, test_loader, ckpt_path=resume_from_checkpoint)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

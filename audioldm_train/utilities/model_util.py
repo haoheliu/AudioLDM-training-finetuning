@@ -268,18 +268,18 @@ def get_vocoder(config, device, mel_bins):
 
     if mel_bins == 64:
         model_path = os.path.join(ROOT, "hifigan_16k_64bins")
-        with open(model_path+".json", "r") as f:
+        with open(model_path + ".json", "r") as f:
             config = json.load(f)
         config = hifigan.AttrDict(config)
         vocoder = hifigan.Generator(config)
     elif mel_bins == 256:
         model_path = os.path.join(ROOT, "hifigan_48k_256bins")
-        with open(model_path+".json", "r") as f:
+        with open(model_path + ".json", "r") as f:
             config = json.load(f)
         config = hifigan.AttrDict(config)
         vocoder = hifigan.Generator_HiFiRes(config)
 
-    ckpt = torch.load(model_path+".ckpt")
+    ckpt = torch.load(model_path + ".ckpt")
     ckpt = torch_version_orig_mod_remove(ckpt)
     vocoder.load_state_dict(ckpt["generator"])
     vocoder.eval()

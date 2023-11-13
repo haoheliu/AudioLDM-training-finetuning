@@ -619,7 +619,7 @@ class DDPM(pl.LightningModule):
                     on_step=True,
                     on_epoch=False,
                 )
-                print(k, self.metrics_buffer[k])
+                # print(k, self.metrics_buffer[k])
             self.metrics_buffer = {}
 
         loss, loss_dict = self.shared_step(batch)
@@ -756,10 +756,6 @@ class DDPM(pl.LightningModule):
                 self.test_data_subset_path is not None
             ), "Please set test_data_subset_path before validation so that model have a target folder"
             try:
-                print(
-                    "Evaluate model output based on the AudioCaps test set: %s"
-                    % "/mnt/fast/nobackup/users/hl01486/datasets/audiocaps_test_subset/2"
-                )
 
                 name = self.validation_folder_name
                 waveform_save_path = os.path.join(self.get_log_dir(), name)
@@ -1335,7 +1331,7 @@ class LatentDiffusion(DDPM):
         return new_cond_dict
 
     def shared_step(self, batch, **kwargs):
-        self.check_module_param_update()
+        # self.check_module_param_update()
         if self.training:
             # Classifier-free guidance
             unconditional_prob_cfg = self.unconditional_prob_cfg

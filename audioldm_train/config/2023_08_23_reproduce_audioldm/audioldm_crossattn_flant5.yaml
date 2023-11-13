@@ -41,7 +41,6 @@ preprocessing:
     n_mel_channels: *mel_bins
     mel_fmin: 0
     mel_fmax: 8000 
-    # target_length: 1024
 
 augmentation:
   mixup: 0.0
@@ -54,7 +53,7 @@ model:
       base_learning_rate: 8.0e-06
       target: audioldm_train.modules.latent_encoder.autoencoder.AutoencoderKL
       params: 
-        reload_from_ckpt: "data/checkpoints/last.ckpt"
+        reload_from_ckpt: "data/checkpoints/vae_mel_16k_64bins"
         sampling_rate: *sampling_rate
         batchsize: 4
         monitor: val/rec_loss

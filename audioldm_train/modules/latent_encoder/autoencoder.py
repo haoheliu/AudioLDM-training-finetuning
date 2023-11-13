@@ -22,6 +22,7 @@ from audioldm_train.utilities.model_util import get_vocoder
 from audioldm_train.utilities.tools import synth_one_sample
 import itertools
 
+
 class AutoencoderKL(pl.LightningModule):
     def __init__(
         self,
@@ -41,8 +42,10 @@ class AutoencoderKL(pl.LightningModule):
         base_learning_rate=1e-5,
     ):
         super().__init__()
-        self.automatic_optimization=False
-        assert "mel_bins" in ddconfig.keys(), "mel_bins is not specified in the Autoencoder config"
+        self.automatic_optimization = False
+        assert (
+            "mel_bins" in ddconfig.keys()
+        ), "mel_bins is not specified in the Autoencoder config"
         num_mel = ddconfig["mel_bins"]
         self.image_key = image_key
         self.sampling_rate = sampling_rate
@@ -88,12 +91,16 @@ class AutoencoderKL(pl.LightningModule):
         if not self.reloaded and self.reload_from_ckpt is not None:
             print("--> Reload weight of autoencoder from %s" % self.reload_from_ckpt)
             checkpoint = torch.load(self.reload_from_ckpt)
-            
+
             load_todo_keys = {}
             pretrained_state_dict = checkpoint["state_dict"]
             current_state_dict = self.state_dict()
             for key in current_state_dict:
-                if(key in pretrained_state_dict.keys() and pretrained_state_dict[key].size() == current_state_dict[key].size()):
+                if (
+                    key in pretrained_state_dict.keys()
+                    and pretrained_state_dict[key].size()
+                    == current_state_dict[key].size()
+                ):
                     load_todo_keys[key] = pretrained_state_dict[key]
                 else:
                     print("Key %s mismatch during loading, seems fine" % key)
@@ -104,7 +111,9 @@ class AutoencoderKL(pl.LightningModule):
             print("Train from scratch")
 
     def get_log_dir(self):
-        return os.path.join(self.logger_save_dir, self.logger_exp_group_name, self.logger_exp_name)
+        return os.path.join(
+            self.logger_save_dir, self.logger_exp_group_name, self.logger_exp_name
+        )
 
     def set_log_dir(self, save_dir, exp_group_name, exp_name):
         self.logger_save_dir = save_dir
@@ -300,9 +309,9 @@ class AutoencoderKL(pl.LightningModule):
             reconstructions=reconstructions,
             posteriors=posterior,
             waveform=waveform,
-            rec_waveform = rec_waveform,
+            rec_waveform=rec_waveform,
             optimizer_idx=1,
-            global_step = self.global_step,
+            global_step=self.global_step,
             last_layer=self.get_last_layer(),
             split="train",
         )
@@ -339,15 +348,15 @@ class AutoencoderKL(pl.LightningModule):
             on_step=True,
             on_epoch=False,
         )
-        
+
         aeloss, log_dict_ae = self.loss(
             inputs=inputs,
             reconstructions=reconstructions,
             posteriors=posterior,
             waveform=waveform,
-            rec_waveform = rec_waveform,
+            rec_waveform=rec_waveform,
             optimizer_idx=0,
-            global_step = self.global_step,
+            global_step=self.global_step,
             last_layer=self.get_last_layer(),
             split="train",
         )
@@ -391,15 +400,15 @@ class AutoencoderKL(pl.LightningModule):
             rec_waveform = self.decode_to_waveform(reconstructions)
         else:
             rec_waveform = None
-            
+
         aeloss, log_dict_ae = self.loss(
             inputs=inputs,
             reconstructions=reconstructions,
             posteriors=posterior,
             waveform=waveform,
-            rec_waveform = rec_waveform,
+            rec_waveform=rec_waveform,
             optimizer_idx=0,
-            global_step = self.global_step,
+            global_step=self.global_step,
             last_layer=self.get_last_layer(),
             split="val",
         )
@@ -409,9 +418,9 @@ class AutoencoderKL(pl.LightningModule):
             reconstructions=reconstructions,
             posteriors=posterior,
             waveform=waveform,
-            rec_waveform = rec_waveform,
+            rec_waveform=rec_waveform,
             optimizer_idx=1,
-            global_step = self.global_step,
+            global_step=self.global_step,
             last_layer=self.get_last_layer(),
             split="val",
         )
@@ -558,7 +567,9 @@ class AutoencoderKL(pl.LightningModule):
                     ),
                     "reconstruct_%s"
                     % name: wandb.Audio(
-                        wav_prediction, caption="reconstruct", sample_rate=self.sampling_rate
+                        wav_prediction,
+                        caption="reconstruct",
+                        sample_rate=self.sampling_rate,
                     ),
                     "samples_%s"
                     % name: wandb.Audio(

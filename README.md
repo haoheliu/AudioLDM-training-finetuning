@@ -28,6 +28,7 @@ To double check if dataset or checkpoints are ready, run the following command:
 ```shell
 python3 tests/validate_dataset_checkpoint.py
 ```
+If the structure is not correct or partly missing. You will see the error message.
 
 ## Train the AudioLDM model
 ```python

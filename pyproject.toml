@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "audioldm-train"
+version = "0.1.0"
+description = ""
+authors = ["haoheliu <867390095@qq.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+ruamel-yaml = "^0.18.5"
+wget = "^3.2"
+kornia = "^0.7.0"
+braceexpand = "^0.1.7"
+webdataset = "^0.2.75"
+hear21passt = {git = "https://github.com/haoheliu/passt_hear21.git"}
+audioldm-eval = {git = "https://github.com/haoheliu/audioldm_eval.git"}
+wandb = "^0.16.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

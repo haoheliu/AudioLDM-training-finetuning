@@ -154,8 +154,6 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
     print("==> Save checkpoint every %s steps" % save_checkpoint_every_n_steps)
     print("==> Perform validation every %s epochs" % validation_every_n_epochs)
 
-    # from pytorch_lightning.profilers import AdvancedProfiler
-
     trainer = Trainer(
         accelerator="gpu",
         devices=devices,

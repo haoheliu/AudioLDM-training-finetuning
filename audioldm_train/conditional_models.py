@@ -21,10 +21,12 @@ from audioldm_train.modules.phoneme_encoder.encoder import TextEncoder
 from transformers import SpeechT5Processor, AutoTokenizer, GPT2Model, GPT2Tokenizer
 from transformers.models.speecht5.modeling_speecht5 import SpeechT5EncoderWithTextPrenet
 
-from audioldm_train.modules.audiomae_gen.model import CLAP2AudioMAE
-from audioldm_train.modules.audiomae_gen.sequence_input import Sequence2AudioMAE
+from audioldm_train.modules.audiomae.sequence_gen.model import CLAP2AudioMAE
+from audioldm_train.modules.audiomae.sequence_gen.sequence_input import (
+    Sequence2AudioMAE,
+)
 import numpy as np
-from audioldm_train.modules.audiomae_gen.model import Prenet
+from audioldm_train.modules.audiomae.sequence_gen.model import Prenet
 
 """
 The model forward function can return three types of data:

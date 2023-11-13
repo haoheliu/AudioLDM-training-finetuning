@@ -1,6 +1,4 @@
-# After triaining this model, try to get the bandwidth
-
-metadata_root: "./dataset/metadata/dataset_root.json"
+metadata_root: "./data/dataset/metadata/dataset_root.json"
 log_directory: "./log/latent_diffusion"
 project: "audioldm"
 precision: "high"
@@ -14,7 +12,6 @@ variables:
   in_channels: &unet_in_channels 8
   optimize_ddpm_parameter: &optimize_ddpm_parameter true
   optimize_gpt: &optimize_gpt true
-
   warmup_steps: &warmup_steps 2000
 
 data: 
@@ -44,20 +41,19 @@ preprocessing:
     n_mel_channels: *mel_bins
     mel_fmin: 0
     mel_fmax: 8000 
-    # target_length: 1024
 
 augmentation:
   mixup: 0.0
 
 model:
-  target: latent_diffusion.models.ddpm.LatentDiffusion
+  target: audioldm_train.modules.latent_diffusion.ddpm.LatentDiffusion
   params: 
     # Autoencoder
     first_stage_config:
       base_learning_rate: 8.0e-06
-      target: latent_encoder.autoencoder.AutoencoderKL
+      target: audioldm_train.modules.latent_encoder.autoencoder.AutoencoderKL
       params: 
-        reload_from_ckpt: "data/checkpoints/vae_mel_16k_64bins"
+        reload_from_ckpt: "data/checkpoints/vae_mel_16k_64bins.ckpt"
         sampling_rate: *sampling_rate
         batchsize: 4
         monitor: val/rec_loss
@@ -66,7 +62,7 @@ model:
         embed_dim: *latent_embed_dim
         time_shuffle: 1
         lossconfig:
-          target: audioldm_train.modules.losses.LPIPSWithDiscriminator
+          target: audioldm_train.losses.LPIPSWithDiscriminator
           params:
             disc_start: 50001
             kl_weight: 1000.0
@@ -111,8 +107,7 @@ model:
     unet_config:
       target: audioldm_train.modules.diffusionmodules.openaimodel.UNetModel
       params:
-        image_size: 64 # Ignore this parameter
-        # Conditioning
+        image_size: 64 
         extra_film_condition_dim: 512 # If you use film as extra condition, set this parameter. For example if you have two conditioning vectors each have dimension 512, then this number would be 1024
         # context_dim: 
         # - 768
@@ -133,28 +128,16 @@ model:
         use_spatial_transformer: true
         transformer_depth: 1
     
-    # Conditional part
     cond_stage_config:
       film_clap_cond1:
         cond_stage_key: text
         conditioning_key: film
-        target: audioldm_train.modules.encoders.modules.CLAPAudioEmbeddingClassifierFreev2
+        target: audioldm_train.conditional_models.CLAPAudioEmbeddingClassifierFreev2
         params:
           pretrained_path: data/checkpoints/clap_music_speech_audioset_epoch_15_esc_89.98.pt
           sampling_rate: 16000
           embed_mode: text # or text
           amodel: HTSAT-base
-
-      # crossattn_gpt2:
-      #   cond_stage_key: text
-      #   conditioning_key: crossattn
-      #   target: audioldm_train.modules.encoders.modules.GPT2WordEmbedding
-
-      # crossattn_flan_t5:
-      #   cond_stage_key: text
-      #   conditioning_key: crossattn
-      #   target: audioldm_train.modules.encoders.modules.FlanT5HiddenState
-
 
     evaluation_params:
       unconditional_guidance_scale: 3.5

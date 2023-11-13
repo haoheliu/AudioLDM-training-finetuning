@@ -53,6 +53,13 @@ python3 eval.py --log_path <path-to-the-experiment-folder>
 ```
 The evaluation result will be saved in a json file at the same level of the audio folder.
 
+## Train the model using your own dataset
+Super easy, simply follow these steps:
+
+1. Prepare the metadata with the same format as the provided AudioCaps dataset. 
+2. Register in the metadata of your dataset in **data/dataset/metadata/dataset_root.json**
+3. Use your dataset in the YAML file.
+
 ## Cite this work
 If you found this tool useful, please consider citing
 

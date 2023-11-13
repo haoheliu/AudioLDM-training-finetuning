@@ -20,9 +20,9 @@ poetry install
 
 ## Download checkpoints and dataset
 1. Download checkpoints from Google Drive: [link](https://drive.google.com/file/d/1pGw9T80YjU-Q-W4pd8c1hqJlauMIEdAm/view?usp=sharing).
-2. Uncompress the checkpoint tar file and place the content into data/checkpoints/
-3. Download the preprocessed AudioCaps from Google Drive: [link]()
-4. Similarly, uncompress the dataset tar file and place the content into data/dataset
+2. Uncompress the checkpoint tar file and place the content into **data/checkpoints/**
+3. Download the preprocessed AudioCaps from Google Drive: [link](https://drive.google.com/file/d/16J1CVu7EZPD_22FxitZ0TpOd__FwzOmx/view?usp=sharing)
+4. Similarly, uncompress the dataset tar file and place the content into **data/dataset**
 
 To double check if dataset or checkpoints are ready, run the following command:
 ```shell

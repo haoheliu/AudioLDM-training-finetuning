@@ -1,0 +1,16 @@
+__pycache__
+taming
+log
+esc50.zip
+ESC-50-master
+*.wav
+ckpt
+lightning_logs
+mlx_submit_*
+job_queue.sh
+*.txt
+*.cleaned
+audiocaps_train.json
+dataset
+checkpoints
+*.tar

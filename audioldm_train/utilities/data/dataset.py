@@ -4,8 +4,8 @@ sys.path.append("src")
 import os
 import pandas as pd
 import yaml
-import utilities.audio as Audio
-from utilities.tools import load_json
+import audioldm_train.utilities.audio as Audio
+from audioldm_train.utilities.tools import load_json
 from audioldm_train.dataset_plugin import *
 from librosa.filters import mel as librosa_mel_fn
 

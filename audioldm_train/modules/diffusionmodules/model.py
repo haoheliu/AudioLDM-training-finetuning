@@ -6,7 +6,7 @@ import numpy as np
 from einops import rearrange
 
 from audioldm_train.utilities.model_util import instantiate_from_config
-from audioldm_train.modules.attention import LinearAttention
+from audioldm_train.modules.diffusionmodules.attention import LinearAttention
 
 
 def get_timestep_embedding(timesteps, embedding_dim):

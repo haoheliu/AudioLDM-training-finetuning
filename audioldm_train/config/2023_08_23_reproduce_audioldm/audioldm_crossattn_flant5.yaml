@@ -1,7 +1,3 @@
-# python3 ~/submit.py -i config/29_final_finetune_audiocaps/2023_07_20_large_8.sh --cpu 48 --gpu 4 --gpuv A100-SXM-80GB --mem 512 --group_id 388 --cluster_id 17
-
-# After triaining this model, try to get the bandwidth
-
 metadata_root: "./data/dataset/metadata/dataset_root.json"
 log_directory: "./log/latent_diffusion"
 project: "audioldm"
@@ -17,7 +13,6 @@ variables:
   optimize_ddpm_parameter: &optimize_ddpm_parameter true
   optimize_gpt: &optimize_gpt true
   warmup_steps: &warmup_steps 2000
-
 
 data: 
   train: ["audiocaps"]
@@ -52,14 +47,14 @@ augmentation:
   mixup: 0.0
 
 model:
-  target: latent_diffusion.models.ddpm.LatentDiffusion
+  target: audioldm_train.modules.latent_diffusion.ddpm.LatentDiffusion
   params: 
     # Autoencoder
     first_stage_config:
       base_learning_rate: 8.0e-06
-      target: latent_encoder.autoencoder.AutoencoderKL
+      target: audioldm_train.modules.latent_encoder.autoencoder.AutoencoderKL
       params: 
-        reload_from_ckpt: "checkpoints/last.ckpt"
+        reload_from_ckpt: "data/checkpoints/last.ckpt"
         sampling_rate: *sampling_rate
         batchsize: 4
         monitor: val/rec_loss
@@ -68,7 +63,7 @@ model:
         embed_dim: *latent_embed_dim
         time_shuffle: 1
         lossconfig:
-          target: audioldm_train.modules.losses.LPIPSWithDiscriminator
+          target: audioldm_train.losses.LPIPSWithDiscriminator
           params:
             disc_start: 50001
             kl_weight: 1000.0
@@ -139,7 +134,7 @@ model:
       crossattn_flan_t5:
         cond_stage_key: text
         conditioning_key: crossattn
-        target: audioldm_train.modules.encoders.modules.FlanT5HiddenState
+        target: audioldm_train.conditional_models.FlanT5HiddenState
 
     evaluation_params:
       unconditional_guidance_scale: 3.5

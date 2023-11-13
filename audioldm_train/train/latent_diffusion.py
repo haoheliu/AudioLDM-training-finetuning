@@ -24,7 +24,7 @@ from torch.utils.data import DataLoader
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-from utilities.tools import listdir_nohidden, get_restore_step, copy_test_subset_data
+from audioldm_train.utilities.tools import listdir_nohidden, get_restore_step, copy_test_subset_data
 import wandb
 from audioldm_train.utilities.model_util import instantiate_from_config
 import logging

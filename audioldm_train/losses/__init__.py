@@ -1,3 +1,1 @@
 from .contperceptual import LPIPSWithDiscriminator
-from .waveform_contperceptual import WaveformDiscriminatorLoss
-from .waveform_contperceptual_panns import WaveformPANNsDiscriminatorLoss

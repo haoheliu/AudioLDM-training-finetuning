@@ -60,7 +60,7 @@ model:
       base_learning_rate: 8.0e-06
       target: latent_encoder.autoencoder.AutoencoderKL
       params: 
-        reload_from_ckpt: "checkpoints/last.ckpt"
+        reload_from_ckpt: "data/checkpoints/last.ckpt"
         sampling_rate: *sampling_rate
         batchsize: 4
         monitor: val/rec_loss
@@ -143,7 +143,7 @@ model:
       #   conditioning_key: film
       #   target: audioldm_train.modules.encoders.modules.CLAPAudioEmbeddingClassifierFreev2
       #   params:
-      #     pretrained_path: checkpoints/music_speech_audioset_epoch_15_esc_89.98.pt
+      #     pretrained_path: data/checkpoints/clap_music_speech_audioset_epoch_15_esc_89.98.pt
       #     sampling_rate: 48000
       #     embed_mode: text # or text
       #     amodel: HTSAT-base

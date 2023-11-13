@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm
 from functools import partial
 
-from audioldm_train.modules.diffusionmodules.util import (
+from audioldm_train.utilities.diffusion_util import (
     make_ddim_sampling_parameters,
     make_ddim_timesteps,
     noise_like,

@@ -13,3 +13,4 @@ job_queue.sh
 audiocaps_train.json
 dataset
 checkpoints
+*.tar

@@ -10,6 +10,17 @@ This repo includes:
 3. Preprocessed Audiocaps dataset and checkpoints (you need to download them from google drived as shown below).
 
 
+- [Train or Finetune the AudioLDM model](#train-or-finetune-the-audioldm-model)
+- [Prepare Python running environment](#prepare-python-running-environment)
+  * [Download checkpoints and dataset](#download-checkpoints-and-dataset)
+- [Play around with the code](#play-around-with-the-code)
+  * [Train the AudioLDM model](#train-the-audioldm-model)
+  * [Finetuning of the pretrained model](#finetuning-of-the-pretrained-model)
+  * [Evaluate the model output](#evaluate-the-model-output)
+  * [Inference with the pretrained model](#inference-with-the-pretrained-model)
+  * [Train the model using your own dataset](#train-the-model-using-your-own-dataset)
+- [Cite this work](#cite-this-work)
+
 # Prepare Python running environment
 
 ```shell 

@@ -1,12 +1,17 @@
+[![arXiv](https://img.shields.io/badge/arXiv-2301.12503-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2301.12503) [![arXiv](https://img.shields.io/badge/arXiv-2308.05734-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2308.05734)
+
 # Train or Finetune the AudioLDM model
 
-## Content of this repo
+This repo includes: 
 
 1. Training: The training of AudioLDM model, also with VAE model training code.
 2. Evaluation: The code for evaluation on the AudioCaps dataset. Result saved as json files. Evaluation metrics including FAD, KL, IS, etc.
-3. Preprocessed Audiocaps dataset and checkpoints.
+3. Inference: Inference your trained AudioLDM model with the caption list you specified.
+3. Preprocessed Audiocaps dataset and checkpoints (you need to download them from google drived as shown below).
 
-## Prepare running environment
+
+# Prepare Python running environment
+
 ```shell 
 # Create conda environment
 conda create -n audioldm_train python=3.10
@@ -30,6 +35,8 @@ python3 tests/validate_dataset_checkpoint.py
 ```
 If the structure is not correct or partly missing. You will see the error message.
 
+# Play around with the code
+
 ## Train the AudioLDM model
 ```python
 # Train the AudioLDM (latent diffusion part)
@@ -40,6 +47,23 @@ python3 audioldm_train/train/autoencoder.py -c audioldm_train/config/2023_11_13_
 ```
 
 The program will perform generation on the evaluation set every 15 epochs of training. After obtaining the audio generation folders (named val_<training-steps>), you can proceed to the next step for model evaluation.
+
+## Finetuning of the pretrained model
+
+You can finetune with two pretrained checkpoint, first download the one that you like (e.g., using wget):
+1. Medium size AudioLDM: https://zenodo.org/records/7884686/files/audioldm-m-full.ckpt
+2. Small size AudioLDM: https://zenodo.org/records/7884686/files/audioldm-s-full
+Place the checkpoint in the *data/checkpoints* folder
+
+Then perform finetuning with one of the following commands:
+```shell
+# Medium size AudioLDM
+python3 audioldm_train/train/latent_diffusion.py -c audioldm_train/config/2023_08_23_reproduce_audioldm/audioldm_original_medium.yaml --reload_from_ckpt data/checkpoints/audioldm-m-full.ckpt
+
+# Small size AudioLDM
+python3 audioldm_train/train/latent_diffusion.py -c audioldm_train/config/2023_08_23_reproduce_audioldm/audioldm_original.yaml --reload_from_ckpt data/checkpoints/audioldm-s-full
+```
+You can specify your own dataset following the same format as the provided AudioCaps dataset.
 
 ## Evaluate the model output
 Automatically evaluation based on each of the folder with generated audio
@@ -79,7 +103,7 @@ Super easy, simply follow these steps:
 
 You do not need to resample or pre-segment the audiofile. The dataloader will handle this part.
 
-## Cite this work
+# Cite this work
 If you found this tool useful, please consider citing
 
 ```bibtex

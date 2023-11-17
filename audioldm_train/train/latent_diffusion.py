@@ -16,20 +16,16 @@ import torch
 
 from tqdm import tqdm
 from pytorch_lightning.strategies.ddp import DDPStrategy
-from audioldm_train.modules.latent_diffusion.ddpm import LatentDiffusion
 from audioldm_train.utilities.data.dataset import AudioDataset
 
-from torch.utils.data import WeightedRandomSampler
 from torch.utils.data import DataLoader
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from audioldm_train.utilities.tools import (
-    listdir_nohidden,
     get_restore_step,
     copy_test_subset_data,
 )
-import wandb
 from audioldm_train.utilities.model_util import instantiate_from_config
 import logging
 
@@ -125,6 +121,7 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
     os.makedirs(checkpoint_path, exist_ok=True)
     shutil.copy(config_yaml_path, wandb_path)
 
+    is_external_checkpoints = False
     if len(os.listdir(checkpoint_path)) > 0:
         print("Load checkpoint from path: %s" % checkpoint_path)
         restore_step, n_step = get_restore_step(checkpoint_path)
@@ -132,6 +129,7 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
         print("Resume from checkpoint", resume_from_checkpoint)
     elif config_reload_from_ckpt is not None:
         resume_from_checkpoint = config_reload_from_ckpt
+        is_external_checkpoints = True
         print("Reload ckpt specified in the config file %s" % resume_from_checkpoint)
     else:
         print("Train from scratch")
@@ -166,39 +164,38 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
         callbacks=[checkpoint_callback],
     )
 
-    trainer.fit(latent_diffusion, loader, val_loader, ckpt_path=resume_from_checkpoint)
+    if is_external_checkpoints:
+        if resume_from_checkpoint is not None:
+            ckpt = torch.load(resume_from_checkpoint)["state_dict"]
 
-    ################################################################################################################
-    # if(resume_from_checkpoint is not None):
-    #     ckpt = torch.load(resume_from_checkpoint)["state_dict"]
+            key_not_in_model_state_dict = []
+            size_mismatch_keys = []
+            state_dict = latent_diffusion.state_dict()
+            print("Filtering key for reloading:", resume_from_checkpoint)
+            print("State dict key size:", len(list(state_dict.keys())), len(list(ckpt.keys())))
+            for key in tqdm(list(ckpt.keys())):
+                if(key not in state_dict.keys()):
+                    key_not_in_model_state_dict.append(key)
+                    del ckpt[key]
+                    continue
+                if(state_dict[key].size() != ckpt[key].size()):
+                    del ckpt[key]
+                    size_mismatch_keys.append(key)
 
-    #     key_not_in_model_state_dict = []
-    #     size_mismatch_keys = []
-    #     state_dict = latent_diffusion.state_dict()
-    #     print("Filtering key for reloading:", resume_from_checkpoint)
-    #     print("State dict key size:", len(list(state_dict.keys())), len(list(ckpt.keys())))
-    #     for key in tqdm(list(ckpt.keys())):
-    #         if(key not in state_dict.keys()):
-    #             key_not_in_model_state_dict.append(key)
-    #             del ckpt[key]
-    #             continue
-    #         if(state_dict[key].size() != ckpt[key].size()):
-    #             del ckpt[key]
-    #             size_mismatch_keys.append(key)
+            # if(len(key_not_in_model_state_dict) != 0 or len(size_mismatch_keys) != 0):
+                # print("⛳", end=" ")
 
-    #     if(len(key_not_in_model_state_dict) != 0 or len(size_mismatch_keys) != 0):
-    #         print("⛳", end=" ")
+            # print("==> Warning: The following key in the checkpoint is not presented in the model:", key_not_in_model_state_dict)
+            # print("==> Warning: These keys have different size between checkpoint and current model: ", size_mismatch_keys)
 
-    #     print("==> Warning: The following key in the checkpoint is not presented in the model:", key_not_in_model_state_dict)
-    #     print("==> Warning: These keys have different size between checkpoint and current model: ", size_mismatch_keys)
+            latent_diffusion.load_state_dict(ckpt, strict=False)
 
-    #     latent_diffusion.load_state_dict(ckpt, strict=False)
+        # if(perform_validation):
+        #     trainer.validate(latent_diffusion, val_loader)
 
-    # if(perform_validation):
-    #     trainer.validate(latent_diffusion, val_loader)
-
-    # trainer.fit(latent_diffusion, loader, val_loader)
-    ################################################################################################################
+        trainer.fit(latent_diffusion, loader, val_loader)
+    else:
+        trainer.fit(latent_diffusion, loader, val_loader, ckpt_path=resume_from_checkpoint)
 
 
 if __name__ == "__main__":
@@ -209,6 +206,14 @@ if __name__ == "__main__":
         type=str,
         required=False,
         help="path to config .yaml file",
+    )
+
+    parser.add_argument(
+        "--reload_from_ckpt",
+        type=str,
+        required=False,
+        default=None,
+        help="path to pretrained checkpoint",
     )
 
     parser.add_argument("--val", action="store_true")
@@ -226,6 +231,9 @@ if __name__ == "__main__":
 
     config_yaml_path = os.path.join(config_yaml)
     config_yaml = yaml.load(open(config_yaml_path, "r"), Loader=yaml.FullLoader)
+    
+    if "reload_from_ckpt" is not None:
+        config_yaml["reload_from_ckpt"] = args.reload_from_ckpt
 
     if perform_validation:
         config_yaml["model"]["params"]["cond_stage_config"][

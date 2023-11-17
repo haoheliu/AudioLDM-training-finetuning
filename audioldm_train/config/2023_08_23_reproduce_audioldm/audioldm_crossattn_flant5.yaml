@@ -22,7 +22,7 @@ data:
   dataloader_add_ons: ["waveform_rs_48k"] 
 
 step:
-  validation_every_n_epochs: 15
+  validation_every_n_epochs: 5
   save_checkpoint_every_n_steps: 5000
   # limit_val_batches: 2
   max_steps: 800000

@@ -51,7 +51,7 @@ def evaluate_exp_performance(exp_name):
         print(folder)
 
         if len(os.listdir(folder)) == 964:
-            test_dataset = "audiocaps_16k"
+            test_dataset = "audiocaps"
         elif len(os.listdir(folder)) > 5000:
             test_dataset = "musiccaps"
         else:

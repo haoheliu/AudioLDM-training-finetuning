@@ -53,12 +53,31 @@ python3 audioldm_train/eval.py --log_path <path-to-the-experiment-folder>
 ```
 The evaluation result will be saved in a json file at the same level of the audio folder.
 
+## Inference with the pretrained model
+Use the following syntax:
+
+```shell
+python3 audioldm_train/infer.py --config_yaml <The-path-to-the-same-config-file-you-use-for-training> --list_inference <the-filelist-you-want-to-generate>
+```
+
+For example:
+```shell
+# Please make sure you have train the model using audioldm_crossattn_flant5.yaml
+# The generated audio will be saved at the same log folder if the pretrained model.
+python3 audioldm_train/infer.py --config_yaml audioldm_train/config/2023_08_23_reproduce_audioldm/audioldm_crossattn_flant5.yaml --list_inference tests/captionlist/inference_test.lst
+```
+The generated audio will be named with the caption by default. If you like to specify the filename to use, please checkout the format of *tests/captionlist/inference_test_with_filename.lst*.
+
+This repo only support inference with the model you trained by yourself. If you want to use the pretrained model directly, please use these two repos: [AudioLDM](https://github.com/haoheliu/AudioLDM) and [AudioLDM2](https://github.com/haoheliu/AudioLDM2).
+
 ## Train the model using your own dataset
 Super easy, simply follow these steps:
 
 1. Prepare the metadata with the same format as the provided AudioCaps dataset. 
 2. Register in the metadata of your dataset in **data/dataset/metadata/dataset_root.json**
 3. Use your dataset in the YAML file.
+
+You do not need to resample or pre-segment the audiofile. The dataloader will handle this part.
 
 ## Cite this work
 If you found this tool useful, please consider citing

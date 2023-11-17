@@ -46,10 +46,10 @@ Automatically evaluation based on each of the folder with generated audio
 ```python
 
 # Evaluate all existing generated folder
-python3 eval.py --log_path all
+python3 audioldm_train/eval.py --log_path all
 
 # Evaluate only a specific experiment folder
-python3 eval.py --log_path <path-to-the-experiment-folder>
+python3 audioldm_train/eval.py --log_path <path-to-the-experiment-folder>
 ```
 The evaluation result will be saved in a json file at the same level of the audio folder.
 

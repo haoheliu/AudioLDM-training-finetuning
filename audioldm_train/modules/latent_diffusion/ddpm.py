@@ -1869,15 +1869,10 @@ class LatentDiffusion(DDPM):
             name = self.get_validation_folder_name()
 
         waveform_save_path = os.path.join(self.get_log_dir(), name)
+        waveform_save_path = waveform_save_path.replace("val_0","infer")
+        
         os.makedirs(waveform_save_path, exist_ok=True)
-        print("Waveform save path: ", waveform_save_path)
-
-        # if (
-        #     "audiocaps" in waveform_save_path
-        #     and len(os.listdir(waveform_save_path)) >= 964
-        # ):
-        #     print("The evaluation has already been done at %s" % waveform_save_path)
-        #     return waveform_save_path
+        print("Waveform inference save path: ", waveform_save_path)
 
         with self.ema_scope("Plotting"):
             for i, batch in enumerate(batchs):
@@ -1935,8 +1930,6 @@ class LatentDiffusion(DDPM):
 
                 mel = self.decode_first_stage(samples)
 
-                # mel = super().get_input(batch, "log_mel_spec")
-
                 waveform = self.mel_spectrogram_to_waveform(
                     mel, savepath=waveform_save_path, bs=None, name=fnames, save=False
                 )
@@ -1958,6 +1951,7 @@ class LatentDiffusion(DDPM):
                         print("Choose the following indexes:", best_index)
                     except Exception as e:
                         print("Warning: while calculating CLAP score (not fatal), ", e)
+
                 self.save_waveform(waveform, waveform_save_path, name=fnames)
         return waveform_save_path
 
@@ -2030,17 +2024,18 @@ class DiffusionWrapper(pl.LightningModule):
             else:
                 raise NotImplementedError()
 
-        if not self.being_verbosed_once:
-            print("The input shape to the diffusion model is as follows:")
-            print("xc", xc.size())
-            print("t", t.size())
-            for i in range(len(context_list)):
-                print(
-                    "context_%s" % i, context_list[i].size(), attn_mask_list[i].size()
-                )
-            if y is not None:
-                print("y", y.size())
-            self.being_verbosed_once = True
+        # if not self.being_verbosed_once:
+        #     print("The input shape to the diffusion model is as follows:")
+        #     print("xc", xc.size())
+        #     print("t", t.size())
+        #     for i in range(len(context_list)):
+        #         print(
+        #             "context_%s" % i, context_list[i].size(), attn_mask_list[i].size()
+        #         )
+        #     if y is not None:
+        #         print("y", y.size())
+        #     self.being_verbosed_once = True
+        
         out = self.diffusion_model(
             xc, t, context_list=context_list, y=y, context_attn_mask_list=attn_mask_list
         )

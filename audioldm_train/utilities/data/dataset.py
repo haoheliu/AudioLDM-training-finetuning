@@ -43,7 +43,7 @@ class AudioDataset(Dataset):
         split="train",
         waveform_only=False,
         add_ons=[],
-        dataset_json_path=None,  #
+        dataset_json=None, 
     ):
         """
         Dataset that manages audio recordings
@@ -61,10 +61,8 @@ class AudioDataset(Dataset):
         self.build_setting_parameters()
 
         # For an external dataset
-        if dataset_json_path is not None:
-            assert type(dataset_json_path) == str
-            print("Load metadata from %s" % dataset_json_path)
-            self.data = load_json(dataset_json_path)["data"]
+        if dataset_json is not None:
+            self.data = dataset_json["data"]
             self.id2label, self.index_dict, self.num2label = {}, {}, {}
         else:
             self.metadata_root = load_json(self.config["metadata_root"])
@@ -96,7 +94,7 @@ class AudioDataset(Dataset):
         data = {
             "text": text,  # list
             "fname": self.text_to_filename(text)
-            if (len(fname) == 0)
+            if (not fname)
             else fname,  # list
             # tensor, [batchsize, class_num]
             "label_vector": "" if (label_vector is None) else label_vector.float(),
@@ -156,7 +154,6 @@ class AudioDataset(Dataset):
                 (
                     log_mel_spec,
                     stft,
-                    mix_lambda,
                     waveform,
                     random_start,
                 ) = self.read_audio_file(datum["wav"])
@@ -321,23 +318,8 @@ class AudioDataset(Dataset):
 
     def resample(self, waveform, sr):
         waveform = torchaudio.functional.resample(waveform, sr, self.sampling_rate)
-        # waveform = librosa.resample(waveform, sr, self.sampling_rate)
         return waveform
-
-        # if sr == 16000:
-        #     return waveform
-        # if sr == 32000 and self.sampling_rate == 16000:
-        #     waveform = waveform[::2]
-        #     return waveform
-        # if sr == 48000 and self.sampling_rate == 16000:
-        #     waveform = waveform[::3]
-        #     return waveform
-        # else:
-        #     raise ValueError(
-        #         "We currently only support 16k audio generation. You need to resample you audio file to 16k, 32k, or 48k: %s, %s"
-        #         % (sr, self.sampling_rate)
-        #     )
-
+    
     def normalize_wav(self, waveform):
         waveform = waveform - np.mean(waveform)
         waveform = waveform / (np.max(np.abs(waveform)) + 1e-8)
@@ -436,25 +418,19 @@ class AudioDataset(Dataset):
         )
         return waveform, random_start
 
-    def mix_two_waveforms(self, waveform1, waveform2):
-        mix_lambda = np.random.beta(5, 5)
-        mix_waveform = mix_lambda * waveform1 + (1 - mix_lambda) * waveform2
-        return self.normalize_wav(mix_waveform), mix_lambda
-
     def read_audio_file(self, filename, filename2=None):
         if os.path.exists(filename):
             waveform, random_start = self.read_wav_file(filename)
         else:
             print(
-                'Warning [dataset.py]: The wav path "',
+                'Non-fatal Warning [dataset.py]: The wav path "',
                 filename,
-                '" is not find in the metadata. Use empty waveform instead.',
+                '" is not find in the metadata. Use empty waveform instead. This is normal in the inference process.',
             )
             target_length = int(self.sampling_rate * self.duration)
             waveform = torch.zeros((1, target_length))
             random_start = 0
 
-        mix_lambda = 0.0
         # log_mel_spec, stft = self.wav_feature_extraction_torchaudio(waveform) # this line is faster, but this implementation is not aligned with HiFi-GAN
         if not self.waveform_only:
             log_mel_spec, stft = self.wav_feature_extraction(waveform)
@@ -463,7 +439,7 @@ class AudioDataset(Dataset):
             # Use zero array to keep the format unified
             log_mel_spec, stft = None, None
 
-        return log_mel_spec, stft, mix_lambda, waveform, random_start
+        return log_mel_spec, stft, waveform, random_start
 
     def get_sample_text_caption(self, datum, mix_datum, label_indices):
         text = self.label_indices_to_text(datum, label_indices)

@@ -22,7 +22,7 @@ data:
   dataloader_add_ons: [] 
 
 step:
-  validation_every_n_epochs: 15
+  validation_every_n_epochs: 5
   save_checkpoint_every_n_steps: 5000
   # limit_val_batches: 2
   max_steps: 800000
@@ -127,6 +127,7 @@ model:
         num_head_channels: 32
         use_spatial_transformer: true
         transformer_depth: 1
+        extra_sa_layer: false
     
     cond_stage_config:
       film_clap_cond1:
@@ -134,10 +135,10 @@ model:
         conditioning_key: film
         target: audioldm_train.conditional_models.CLAPAudioEmbeddingClassifierFreev2
         params:
-          pretrained_path: data/checkpoints/clap_music_speech_audioset_epoch_15_esc_89.98.pt
+          pretrained_path: data/checkpoints/clap_htsat_tiny.pt
           sampling_rate: 16000
           embed_mode: text # or text
-          amodel: HTSAT-base
+          amodel: HTSAT-tiny
 
     evaluation_params:
       unconditional_guidance_scale: 3.5

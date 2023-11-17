@@ -19,7 +19,7 @@ data:
   val: "audiocaps"
   test: "audiocaps"
   class_label_indices: "audioset_eval_subset"
-  dataloader_add_ons: ["waveform_rs_48k"] 
+  dataloader_add_ons: [] 
 
 step:
   validation_every_n_epochs: 5
@@ -107,14 +107,13 @@ model:
     unet_config:
       target: audioldm_train.modules.diffusionmodules.openaimodel.UNetModel
       params:
-        image_size: 64 # Ignore this parameter
-        # Conditioning
-        # extra_film_condition_dim: 512 # If you use film as extra condition, set this parameter. For example if you have two conditioning vectors each have dimension 512, then this number would be 1024
-        context_dim: 
-        - 1024
+        image_size: 64 
+        extra_film_condition_dim: 512 # If you use film as extra condition, set this parameter. For example if you have two conditioning vectors each have dimension 512, then this number would be 1024
+        # context_dim: 
+        # - 768
         in_channels: *unet_in_channels # The input channel of the UNet model
         out_channels: *latent_embed_dim # TODO might need to change
-        model_channels: 128 # TODO might need to change
+        model_channels: 192 # TODO might need to change
         attention_resolutions:
         - 8
         - 4
@@ -128,12 +127,18 @@ model:
         num_head_channels: 32
         use_spatial_transformer: true
         transformer_depth: 1
+        extra_sa_layer: False
     
     cond_stage_config:
-      crossattn_flan_t5:
+      film_clap_cond1:
         cond_stage_key: text
-        conditioning_key: crossattn
-        target: audioldm_train.conditional_models.FlanT5HiddenState
+        conditioning_key: film
+        target: audioldm_train.conditional_models.CLAPAudioEmbeddingClassifierFreev2
+        params:
+          pretrained_path: data/checkpoints/clap_music_speech_audioset_epoch_15_esc_89.98.pt
+          sampling_rate: 16000
+          embed_mode: text # or text
+          amodel: HTSAT-base
 
     evaluation_params:
       unconditional_guidance_scale: 3.5

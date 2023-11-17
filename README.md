@@ -1,12 +1,28 @@
+[![arXiv](https://img.shields.io/badge/arXiv-2301.12503-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2301.12503) [![arXiv](https://img.shields.io/badge/arXiv-2308.05734-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2308.05734)
+
 # Train or Finetune the AudioLDM model
 
-## Content of this repo
+This repo includes: 
 
 1. Training: The training of AudioLDM model, also with VAE model training code.
 2. Evaluation: The code for evaluation on the AudioCaps dataset. Result saved as json files. Evaluation metrics including FAD, KL, IS, etc.
-3. Preprocessed Audiocaps dataset and checkpoints.
+3. Inference: Inference your trained AudioLDM model with the caption list you specified.
+3. Preprocessed Audiocaps dataset and checkpoints (you need to download them from google drived as shown below).
 
-## Prepare running environment
+
+- [Train or Finetune the AudioLDM model](#train-or-finetune-the-audioldm-model)
+- [Prepare Python running environment](#prepare-python-running-environment)
+  * [Download checkpoints and dataset](#download-checkpoints-and-dataset)
+- [Play around with the code](#play-around-with-the-code)
+  * [Train the AudioLDM model](#train-the-audioldm-model)
+  * [Finetuning of the pretrained model](#finetuning-of-the-pretrained-model)
+  * [Evaluate the model output](#evaluate-the-model-output)
+  * [Inference with the pretrained model](#inference-with-the-pretrained-model)
+  * [Train the model using your own dataset](#train-the-model-using-your-own-dataset)
+- [Cite this work](#cite-this-work)
+
+# Prepare Python running environment
+
 ```shell 
 # Create conda environment
 conda create -n audioldm_train python=3.10
@@ -30,6 +46,8 @@ python3 tests/validate_dataset_checkpoint.py
 ```
 If the structure is not correct or partly missing. You will see the error message.
 
+# Play around with the code
+
 ## Train the AudioLDM model
 ```python
 # Train the AudioLDM (latent diffusion part)
@@ -41,17 +59,51 @@ python3 audioldm_train/train/autoencoder.py -c audioldm_train/config/2023_11_13_
 
 The program will perform generation on the evaluation set every 15 epochs of training. After obtaining the audio generation folders (named val_<training-steps>), you can proceed to the next step for model evaluation.
 
+## Finetuning of the pretrained model
+
+You can finetune with two pretrained checkpoint, first download the one that you like (e.g., using wget):
+1. Medium size AudioLDM: https://zenodo.org/records/7884686/files/audioldm-m-full.ckpt
+2. Small size AudioLDM: https://zenodo.org/records/7884686/files/audioldm-s-full
+Place the checkpoint in the *data/checkpoints* folder
+
+Then perform finetuning with one of the following commands:
+```shell
+# Medium size AudioLDM
+python3 audioldm_train/train/latent_diffusion.py -c audioldm_train/config/2023_08_23_reproduce_audioldm/audioldm_original_medium.yaml --reload_from_ckpt data/checkpoints/audioldm-m-full.ckpt
+
+# Small size AudioLDM
+python3 audioldm_train/train/latent_diffusion.py -c audioldm_train/config/2023_08_23_reproduce_audioldm/audioldm_original.yaml --reload_from_ckpt data/checkpoints/audioldm-s-full
+```
+You can specify your own dataset following the same format as the provided AudioCaps dataset.
+
 ## Evaluate the model output
 Automatically evaluation based on each of the folder with generated audio
 ```python
 
 # Evaluate all existing generated folder
-python3 eval.py --log_path all
+python3 audioldm_train/eval.py --log_path all
 
 # Evaluate only a specific experiment folder
-python3 eval.py --log_path <path-to-the-experiment-folder>
+python3 audioldm_train/eval.py --log_path <path-to-the-experiment-folder>
 ```
 The evaluation result will be saved in a json file at the same level of the audio folder.
+
+## Inference with the pretrained model
+Use the following syntax:
+
+```shell
+python3 audioldm_train/infer.py --config_yaml <The-path-to-the-same-config-file-you-use-for-training> --list_inference <the-filelist-you-want-to-generate>
+```
+
+For example:
+```shell
+# Please make sure you have train the model using audioldm_crossattn_flant5.yaml
+# The generated audio will be saved at the same log folder if the pretrained model.
+python3 audioldm_train/infer.py --config_yaml audioldm_train/config/2023_08_23_reproduce_audioldm/audioldm_crossattn_flant5.yaml --list_inference tests/captionlist/inference_test.lst
+```
+The generated audio will be named with the caption by default. If you like to specify the filename to use, please checkout the format of *tests/captionlist/inference_test_with_filename.lst*.
+
+This repo only support inference with the model you trained by yourself. If you want to use the pretrained model directly, please use these two repos: [AudioLDM](https://github.com/haoheliu/AudioLDM) and [AudioLDM2](https://github.com/haoheliu/AudioLDM2).
 
 ## Train the model using your own dataset
 Super easy, simply follow these steps:
@@ -60,7 +112,9 @@ Super easy, simply follow these steps:
 2. Register in the metadata of your dataset in **data/dataset/metadata/dataset_root.json**
 3. Use your dataset in the YAML file.
 
-## Cite this work
+You do not need to resample or pre-segment the audiofile. The dataloader will handle this part.
+
+# Cite this work
 If you found this tool useful, please consider citing
 
 ```bibtex

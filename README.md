@@ -48,7 +48,7 @@ python3 audioldm_train/train/latent_diffusion.py -c audioldm_train/config/2023_0
 python3 audioldm_train/train/autoencoder.py -c audioldm_train/config/2023_11_13_vae_autoencoder/16k_64.yaml
 ```
 
-The program will perform generation on the evaluation set every 15 epochs of training. After obtaining the audio generation folders (named val_<training-steps>), you can proceed to the next step for model evaluation.
+The program will perform generation on the evaluation set every 5 epochs of training. After obtaining the audio generation folders (named val_<training-steps>), you can proceed to the next step for model evaluation.
 
 ## Finetuning of the pretrained model
 

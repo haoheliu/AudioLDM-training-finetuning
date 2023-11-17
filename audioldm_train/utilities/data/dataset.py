@@ -43,7 +43,7 @@ class AudioDataset(Dataset):
         split="train",
         waveform_only=False,
         add_ons=[],
-        dataset_json=None, 
+        dataset_json=None,
     ):
         """
         Dataset that manages audio recordings
@@ -93,9 +93,7 @@ class AudioDataset(Dataset):
 
         data = {
             "text": text,  # list
-            "fname": self.text_to_filename(text)
-            if (not fname)
-            else fname,  # list
+            "fname": self.text_to_filename(text) if (not fname) else fname,  # list
             # tensor, [batchsize, class_num]
             "label_vector": "" if (label_vector is None) else label_vector.float(),
             # tensor, [batchsize, 1, samples_num]
@@ -319,7 +317,7 @@ class AudioDataset(Dataset):
     def resample(self, waveform, sr):
         waveform = torchaudio.functional.resample(waveform, sr, self.sampling_rate)
         return waveform
-    
+
     def normalize_wav(self, waveform):
         waveform = waveform - np.mean(waveform)
         waveform = waveform / (np.max(np.abs(waveform)) + 1e-8)

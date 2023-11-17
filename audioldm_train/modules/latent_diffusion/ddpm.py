@@ -1869,8 +1869,8 @@ class LatentDiffusion(DDPM):
             name = self.get_validation_folder_name()
 
         waveform_save_path = os.path.join(self.get_log_dir(), name)
-        waveform_save_path = waveform_save_path.replace("val_0","infer")
-        
+        waveform_save_path = waveform_save_path.replace("val_0", "infer")
+
         os.makedirs(waveform_save_path, exist_ok=True)
         print("Waveform inference save path: ", waveform_save_path)
 
@@ -2035,7 +2035,7 @@ class DiffusionWrapper(pl.LightningModule):
         #     if y is not None:
         #         print("y", y.size())
         #     self.being_verbosed_once = True
-        
+
         out = self.diffusion_model(
             xc, t, context_list=context_list, y=y, context_attn_mask_list=attn_mask_list
         )

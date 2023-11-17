@@ -68,6 +68,8 @@ python3 audioldm_train/train/latent_diffusion.py -c audioldm_train/config/2023_0
 ```
 You can specify your own dataset following the same format as the provided AudioCaps dataset.
 
+Note that the pretrained AudioLDM checkpoints are under CC-by-NC 4.0 license, which is not allowed for commerial use.
+
 ## Evaluate the model output
 Automatically evaluation based on each of the folder with generated audio
 ```python

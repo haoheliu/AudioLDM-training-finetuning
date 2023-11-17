@@ -2,15 +2,6 @@
 
 # Train or Finetune the AudioLDM model
 
-This repo includes: 
-
-1. Training: The training of AudioLDM model, also with VAE model training code.
-2. Evaluation: The code for evaluation on the AudioCaps dataset. Result saved as json files. Evaluation metrics including FAD, KL, IS, etc.
-3. Inference: Inference your trained AudioLDM model with the caption list you specified.
-3. Preprocessed Audiocaps dataset and checkpoints (you need to download them from google drived as shown below).
-
-
-- [Train or Finetune the AudioLDM model](#train-or-finetune-the-audioldm-model)
 - [Prepare Python running environment](#prepare-python-running-environment)
   * [Download checkpoints and dataset](#download-checkpoints-and-dataset)
 - [Play around with the code](#play-around-with-the-code)
@@ -64,6 +55,7 @@ The program will perform generation on the evaluation set every 15 epochs of tra
 You can finetune with two pretrained checkpoint, first download the one that you like (e.g., using wget):
 1. Medium size AudioLDM: https://zenodo.org/records/7884686/files/audioldm-m-full.ckpt
 2. Small size AudioLDM: https://zenodo.org/records/7884686/files/audioldm-s-full
+
 Place the checkpoint in the *data/checkpoints* folder
 
 Then perform finetuning with one of the following commands:

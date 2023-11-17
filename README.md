@@ -104,7 +104,7 @@ Super easy, simply follow these steps:
 2. Register in the metadata of your dataset in **data/dataset/metadata/dataset_root.json**
 3. Use your dataset in the YAML file.
 
-You do not need to resample or pre-segment the audiofile. The dataloader will handle this part.
+You do not need to resample or pre-segment the audiofile. The dataloader will do most of the jobs.
 
 # Cite this work
 If you found this tool useful, please consider citing

@@ -3,15 +3,17 @@ import yaml
 import torch
 from audioldm_eval import EvaluationHelper
 
-SAMPLE_RATE=16000
+SAMPLE_RATE = 16000
 device = torch.device(f"cuda:{0}")
 evaluator = EvaluationHelper(SAMPLE_RATE, device)
+
 
 def locate_yaml_file(path):
     for file in os.listdir(path):
         if ".yaml" in file:
             return os.path.join(path, file)
     return None
+
 
 def is_evaluated(path):
     candidates = []

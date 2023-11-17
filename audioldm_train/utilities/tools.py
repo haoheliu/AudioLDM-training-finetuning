@@ -40,27 +40,32 @@ MD5_MAP = {
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 def read_list(fname):
     result = []
     with open(fname, "r") as f:
         for each in f.readlines():
-            each = each.strip('\n')
+            each = each.strip("\n")
             result.append(each)
     return result
+
 
 def build_dataset_json_from_list(list_path):
     data = []
     for each in read_list(list_path):
         if "|" in each:
-            wav, caption = each.split('|')
+            wav, caption = each.split("|")
         else:
             caption = each
             wav = ""
-        data.append({
-            "wav": wav,
-            "caption": caption,
-        })
+        data.append(
+            {
+                "wav": wav,
+                "caption": caption,
+            }
+        )
     return {"data": data}
+
 
 def load_json(fname):
     with open(fname, "r") as f:

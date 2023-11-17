@@ -13,24 +13,27 @@ from audioldm_train.utilities.tools import get_restore_step
 from audioldm_train.utilities.model_util import instantiate_from_config
 from audioldm_train.utilities.tools import build_dataset_json_from_list
 
+
 def infer(dataset_json, configs, config_yaml_path, exp_group_name, exp_name):
-    if("seed" in configs.keys()):
+    if "seed" in configs.keys():
         seed_everything(configs["seed"])
     else:
         print("SEED EVERYTHING TO 0")
         seed_everything(0)
 
-    if("precision" in configs.keys()):
+    if "precision" in configs.keys():
         torch.set_float32_matmul_precision(configs["precision"])
 
     log_path = configs["log_directory"]
-    
-    if("dataloader_add_ons" in configs["data"].keys()):
+
+    if "dataloader_add_ons" in configs["data"].keys():
         dataloader_add_ons = configs["data"]["dataloader_add_ons"]
     else:
         dataloader_add_ons = []
 
-    val_dataset = AudioDataset(configs, split="test", add_ons=dataloader_add_ons,dataset_json=dataset_json)
+    val_dataset = AudioDataset(
+        configs, split="test", add_ons=dataloader_add_ons, dataset_json=dataset_json
+    )
 
     val_loader = DataLoader(
         val_dataset,
@@ -42,18 +45,9 @@ def infer(dataset_json, configs, config_yaml_path, exp_group_name, exp_name):
     except:
         config_reload_from_ckpt = None
 
-    checkpoint_path = os.path.join(
-        log_path,
-        exp_group_name, 
-        exp_name,
-        "checkpoints"
-    )
+    checkpoint_path = os.path.join(log_path, exp_group_name, exp_name, "checkpoints")
 
-    wandb_path = os.path.join(
-        log_path,
-        exp_group_name, 
-        exp_name
-    )
+    wandb_path = os.path.join(log_path, exp_group_name, exp_name)
 
     os.makedirs(checkpoint_path, exist_ok=True)
     shutil.copy(config_yaml_path, wandb_path)
@@ -72,25 +66,34 @@ def infer(dataset_json, configs, config_yaml_path, exp_group_name, exp_name):
 
     latent_diffusion = instantiate_from_config(configs["model"])
     latent_diffusion.set_log_dir(log_path, exp_group_name, exp_name)
-    
-    guidance_scale=configs["model"]["params"]["evaluation_params"]["unconditional_guidance_scale"]
-    ddim_sampling_steps=configs["model"]["params"]["evaluation_params"]["ddim_sampling_steps"]
-    n_candidates_per_samples=configs["model"]["params"]["evaluation_params"]["n_candidates_per_samples"]
+
+    guidance_scale = configs["model"]["params"]["evaluation_params"][
+        "unconditional_guidance_scale"
+    ]
+    ddim_sampling_steps = configs["model"]["params"]["evaluation_params"][
+        "ddim_sampling_steps"
+    ]
+    n_candidates_per_samples = configs["model"]["params"]["evaluation_params"][
+        "n_candidates_per_samples"
+    ]
 
     checkpoint = torch.load(resume_from_checkpoint)
     latent_diffusion.load_state_dict(checkpoint["state_dict"])
 
     latent_diffusion.eval()
     latent_diffusion = latent_diffusion.cuda()
-    
-    latent_diffusion.generate_sample(val_loader, 
-                                    unconditional_guidance_scale=guidance_scale, 
-                                    ddim_steps=ddim_sampling_steps, 
-                                    n_gen=n_candidates_per_samples)  
+
+    latent_diffusion.generate_sample(
+        val_loader,
+        unconditional_guidance_scale=guidance_scale,
+        ddim_steps=ddim_sampling_steps,
+        n_gen=n_candidates_per_samples,
+    )
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    
+
     parser.add_argument(
         "-c",
         "--config_yaml",
@@ -106,7 +109,7 @@ if __name__ == "__main__":
         required=False,
         help="The filelist that contain captions (and optionally filenames)",
     )
-    
+
     args = parser.parse_args()
 
     assert torch.cuda.is_available(), "CUDA is not available"
@@ -118,8 +121,8 @@ if __name__ == "__main__":
 
     config_yaml_path = os.path.join(config_yaml)
     config_yaml = yaml.load(open(config_yaml_path, "r"), Loader=yaml.FullLoader)
-    
+
     if "reload_from_ckpt" is not None:
         config_yaml["reload_from_ckpt"] = args.reload_from_ckpt
-    
+
     infer(dataset_json, config_yaml, config_yaml_path, exp_group_name, exp_name)

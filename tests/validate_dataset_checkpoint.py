@@ -11,23 +11,20 @@ expected_structure = {
         "hifigan_16k_64bins.json",
         "hifigan_48k_256bins.ckpt",
         "hifigan_48k_256bins.json",
-        "vae_mel_16k_64bins.ckpt"
+        "vae_mel_16k_64bins.ckpt",
     ],
     "dataset": {
-        "audioset": [
-            "zip_audios"
-        ],
-        "metadata": [
-            "audiocaps",
-            "dataset_root.json"
-        ]
-    }
+        "audioset": ["zip_audios"],
+        "metadata": ["audiocaps", "dataset_root.json"],
+    },
 }
 
+
 def load_json(fname):
-    with open(fname,'r') as f:
+    with open(fname, "r") as f:
         data = json.load(f)
         return data
+
 
 def validate_structure(root_path, expected):
     for name, content in expected.items():
@@ -50,12 +47,15 @@ def validate_structure(root_path, expected):
             return False, "Invalid structure definition"
     return True, "All files and directories are present"
 
-copied_folder_path = 'data' 
+
+copied_folder_path = "data"
 valid, message = validate_structure(copied_folder_path, expected_structure)
 print(message)
 print("Checking the validity of the audio datasets")
-metadata_json_list = ["data/dataset/metadata/audiocaps/datafiles/audiocaps_train_label.json", 
-                        "data/dataset/metadata/audiocaps/testset_subset/audiocaps_test_nonrepeat_subset_0.json"]
+metadata_json_list = [
+    "data/dataset/metadata/audiocaps/datafiles/audiocaps_train_label.json",
+    "data/dataset/metadata/audiocaps/testset_subset/audiocaps_test_nonrepeat_subset_0.json",
+]
 missing_files_count = 0
 for metadata_json in metadata_json_list:
     metadata = load_json(metadata_json)["data"]

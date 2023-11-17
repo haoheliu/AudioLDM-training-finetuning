@@ -172,18 +172,22 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
             size_mismatch_keys = []
             state_dict = latent_diffusion.state_dict()
             print("Filtering key for reloading:", resume_from_checkpoint)
-            print("State dict key size:", len(list(state_dict.keys())), len(list(ckpt.keys())))
+            print(
+                "State dict key size:",
+                len(list(state_dict.keys())),
+                len(list(ckpt.keys())),
+            )
             for key in tqdm(list(ckpt.keys())):
-                if(key not in state_dict.keys()):
+                if key not in state_dict.keys():
                     key_not_in_model_state_dict.append(key)
                     del ckpt[key]
                     continue
-                if(state_dict[key].size() != ckpt[key].size()):
+                if state_dict[key].size() != ckpt[key].size():
                     del ckpt[key]
                     size_mismatch_keys.append(key)
 
             # if(len(key_not_in_model_state_dict) != 0 or len(size_mismatch_keys) != 0):
-                # print("⛳", end=" ")
+            # print("⛳", end=" ")
 
             # print("==> Warning: The following key in the checkpoint is not presented in the model:", key_not_in_model_state_dict)
             # print("==> Warning: These keys have different size between checkpoint and current model: ", size_mismatch_keys)
@@ -195,7 +199,9 @@ def main(configs, config_yaml_path, exp_group_name, exp_name, perform_validation
 
         trainer.fit(latent_diffusion, loader, val_loader)
     else:
-        trainer.fit(latent_diffusion, loader, val_loader, ckpt_path=resume_from_checkpoint)
+        trainer.fit(
+            latent_diffusion, loader, val_loader, ckpt_path=resume_from_checkpoint
+        )
 
 
 if __name__ == "__main__":
@@ -231,7 +237,7 @@ if __name__ == "__main__":
 
     config_yaml_path = os.path.join(config_yaml)
     config_yaml = yaml.load(open(config_yaml_path, "r"), Loader=yaml.FullLoader)
-    
+
     if "reload_from_ckpt" is not None:
         config_yaml["reload_from_ckpt"] = args.reload_from_ckpt
 

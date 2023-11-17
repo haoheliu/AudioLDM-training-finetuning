@@ -1,6 +1,6 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2301.12503-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2301.12503) [![arXiv](https://img.shields.io/badge/arXiv-2308.05734-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2308.05734)
 
-# Train or Finetune the AudioLDM model
+# 🔊 AudioLDM training, finetuning, inference and evaluation
 
 - [Prepare Python running environment](#prepare-python-running-environment)
   * [Download checkpoints and dataset](#download-checkpoints-and-dataset)
@@ -26,9 +26,9 @@ poetry install
 ```
 
 ## Download checkpoints and dataset
-1. Download checkpoints from Google Drive: [link](https://drive.google.com/file/d/1pGw9T80YjU-Q-W4pd8c1hqJlauMIEdAm/view?usp=sharing).
+1. Download checkpoints from Google Drive: [link](https://drive.google.com/file/d/1T6EnuAHIc8ioeZ9kB1OZ_WGgwXAVGOZS/view?usp=drive_link). The checkpoints including pretrained VAE, AudioMAE, CLAP, 16kHz HiFiGAN, and 48kHz HiFiGAN.
 2. Uncompress the checkpoint tar file and place the content into **data/checkpoints/**
-3. Download the preprocessed AudioCaps from Google Drive: [link](https://drive.google.com/file/d/16J1CVu7EZPD_22FxitZ0TpOd__FwzOmx/view?usp=sharing)
+3. Download the preprocessed AudioCaps from Google Drive: [link](https://drive.google.com/file/d/16J1CVu7EZPD_22FxitZ0TpOd__FwzOmx/view?usp=drive_link)
 4. Similarly, uncompress the dataset tar file and place the content into **data/dataset**
 
 To double check if dataset or checkpoints are ready, run the following command:
@@ -95,6 +95,7 @@ For example:
 # The generated audio will be saved at the same log folder if the pretrained model.
 python3 audioldm_train/infer.py --config_yaml audioldm_train/config/2023_08_23_reproduce_audioldm/audioldm_crossattn_flant5.yaml --list_inference tests/captionlist/inference_test.lst
 ```
+
 The generated audio will be named with the caption by default. If you like to specify the filename to use, please checkout the format of *tests/captionlist/inference_test_with_filename.lst*.
 
 This repo only support inference with the model you trained by yourself. If you want to use the pretrained model directly, please use these two repos: [AudioLDM](https://github.com/haoheliu/AudioLDM) and [AudioLDM2](https://github.com/haoheliu/AudioLDM2).
@@ -128,4 +129,12 @@ If you found this tool useful, please consider citing
   year={2023}
 }
 ```
+
+# Acknowledgement
+We greatly appreciate the open-soucing of the following code bases. Open source code base is the real-world infinite stone 💎!
+- https://github.com/CompVis/stable-diffusion
+- https://github.com/LAION-AI/CLAP
+- https://github.com/jik876/hifi-gan
+
+> This research was partly supported by the British Broadcasting Corporation Research and Development, Engineering and Physical Sciences Research Council (EPSRC) Grant EP/T019751/1 "AI for Sound", and a PhD scholarship from the Centre for Vision, Speech and Signal Processing (CVSSP), Faculty of Engineering and Physical Science (FEPS), University of Surrey. For the purpose of open access, the authors have applied a Creative Commons Attribution (CC BY) license to any Author Accepted Manuscript version arising. We would like to thank Tang Li, Ke Chen, Yusong Wu, Zehua Chen and Jinhua Liang for their support and discussions.
 

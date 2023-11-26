@@ -238,7 +238,7 @@ if __name__ == "__main__":
     config_yaml_path = os.path.join(config_yaml)
     config_yaml = yaml.load(open(config_yaml_path, "r"), Loader=yaml.FullLoader)
 
-    if "reload_from_ckpt" is not None:
+    if args.reload_from_ckpt is not None:
         config_yaml["reload_from_ckpt"] = args.reload_from_ckpt
 
     if perform_validation:

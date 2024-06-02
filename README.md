@@ -113,20 +113,22 @@ You do not need to resample or pre-segment the audiofile. The dataloader will do
 If you found this tool useful, please consider citing
 
 ```bibtex
+@article{audioldm2-2024taslp,
+  author={Liu, Haohe and Yuan, Yi and Liu, Xubo and Mei, Xinhao and Kong, Qiuqiang and Tian, Qiao and Wang, Yuping and Wang, Wenwu and Wang, Yuxuan and Plumbley, Mark D.},
+  journal={IEEE/ACM Transactions on Audio, Speech, and Language Processing}, 
+  title={AudioLDM 2: Learning Holistic Audio Generation With Self-Supervised Pretraining}, 
+  year={2024},
+  volume={32},
+  pages={2871-2883},
+  doi={10.1109/TASLP.2024.3399607}
+}
+
 @article{liu2023audioldm,
   title={{AudioLDM}: Text-to-Audio Generation with Latent Diffusion Models},
   author={Liu, Haohe and Chen, Zehua and Yuan, Yi and Mei, Xinhao and Liu, Xubo and Mandic, Danilo and Wang, Wenwu and Plumbley, Mark D},
   journal={Proceedings of the International Conference on Machine Learning},
   year={2023}
-}
-```
-
-```bibtex
-@article{liu2023audioldm2,
-  title={{AudioLDM 2}: Learning Holistic Audio Generation with Self-supervised Pretraining},
-  author={Haohe Liu and Qiao Tian and Yi Yuan and Xubo Liu and Xinhao Mei and Qiuqiang Kong and Yuping Wang and Wenwu Wang and Yuxuan Wang and Mark D. Plumbley},
-  journal={arXiv preprint arXiv:2308.05734},
-  year={2023}
+  pages={21450-21474}
 }
 ```
 

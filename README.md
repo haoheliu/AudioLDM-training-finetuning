@@ -26,9 +26,9 @@ poetry install
 ```
 
 ## Download checkpoints and dataset
-1. Download checkpoints from Google Drive: [link](https://drive.google.com/file/d/1T6EnuAHIc8ioeZ9kB1OZ_WGgwXAVGOZS/view?usp=drive_link). The checkpoints including pretrained VAE, AudioMAE, CLAP, 16kHz HiFiGAN, and 48kHz HiFiGAN.
+1. Download checkpoints (checkpoints.tar) from Google Drive (or from [Zenodo](https://zenodo.org/records/14342967)): [link](https://drive.google.com/file/d/1T6EnuAHIc8ioeZ9kB1OZ_WGgwXAVGOZS/view?usp=drive_link). The checkpoints including pretrained VAE, AudioMAE, CLAP, 16kHz HiFiGAN, and 48kHz HiFiGAN.
 2. Uncompress the checkpoint tar file and place the content into **data/checkpoints/**
-3. Download the preprocessed AudioCaps from Google Drive: [link](https://drive.google.com/file/d/16J1CVu7EZPD_22FxitZ0TpOd__FwzOmx/view?usp=drive_link)
+3. Download the preprocessed AudioCaps (dataset.tar) from Google Drive (or from [Zenodo](https://zenodo.org/records/14342967)): [link](https://drive.google.com/file/d/16J1CVu7EZPD_22FxitZ0TpOd__FwzOmx/view?usp=drive_link)
 4. Similarly, uncompress the dataset tar file and place the content into **data/dataset**
 
 To double check if dataset or checkpoints are ready, run the following command:
